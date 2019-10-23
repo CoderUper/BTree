@@ -1,0 +1,35 @@
+
+            __                __                
+    __   __/_/___ ___  ____  / /_  _______      
+    \ \ / / / __ `__ \/ __ \/ / / / / ___/      
+     \ V / / / / / / / /_/ / / /_/ (__  )       
+      \_/_/_/ /_/ /_/ ,___/_/\____/____/        
+                   /_/                          
+                                                
+   Author: chxuan <787280310@qq.com>            
+   Repository: https://github.com/chxuan/vimplus
+
+   [e]  <empty buffer>
+
+   MRU
+
+   [0]   ~/C++/BTree/BTree.cpp
+   [1]   ~/C++/BTree/main.cpp
+   [2]   ~/C++/BTree/struct.h
+   [3]   ~/C++/BTree/BTree.h
+   [4]   ~/C++/BTree-and-BPlusTree-Realize/main.cpp
+   [5]   ~/C++/B_plus_tree/test.cpp
+   [6]   ~/C++/B_plus_tree/bPlusTree.h
+   [7]   ~/C++/test.cpp
+   [8]   /etc/ssh/sshd_config
+   [9]   ~/C++/test.s
+
+   MRU /home/jinzhuguang/C++/BTree
+
+   [10]  BTree.cpp
+   [11]  main.cpp
+   [12]  struct.h
+   [13]  BTree.h
+   [14]  /home/jinzhuguang/C++/BTree-and-BPlusTree-Realize/main.cpp
+
+   [q]  <quit>
