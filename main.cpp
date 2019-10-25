@@ -25,10 +25,16 @@ int main()
     }
     std::cout<<"key num is "<<bt.get_num()<<std::endl;
     bt.bfs_print();
+//    bt.remove(58);
+    for(int i=0;i<count;i++){
+        bt.remove(keys[i]);  
+    }
+    bt.bfs_print();
+    /*
     for(std::vector<keyType>::iterator it=key_list.begin();it!=key_list.end();it++)
     {
         std::cout<<*it<<" ";
-    }
+    }*/
     return 0;
 }
 

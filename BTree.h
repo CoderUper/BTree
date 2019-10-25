@@ -12,7 +12,7 @@ public:
     bool insert(keyType key);
     bool remove(keyType key);
     void SolveOverflow(Node* node);
-    void SolveUnderflow();
+    void SolveUnderflow(Node* node);
     void release(Node * root);
     void bfs_print();
     int get_num();
