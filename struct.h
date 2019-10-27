@@ -11,6 +11,7 @@ struct Node{
     int key_num;
     int child_num;
     Node* parent;
+    bool is_leaf;
     Node()
     {
         key_num=0;
@@ -18,6 +19,7 @@ struct Node{
         memset(key,0,sizeof(key));
         memset(child,0,sizeof(child));
         parent=NULL;
+        is_leaf=true;
     }
     int search(keyType e)
     {

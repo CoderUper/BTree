@@ -13,10 +13,9 @@ int main()
     int count=int(sizeof(keys)/sizeof(keyType));
     for(int i=0;i<count;i++)
         bt.insert(keys[i]);
-    
     keyType n=1;
     srand((int)time(0));
-    while(n<=18)
+    while(n<=1000)
     {
         int e=random(200)+1;
         bt.insert(e);
@@ -26,10 +25,12 @@ int main()
     std::cout<<"key num is "<<bt.get_num()<<std::endl;
     bt.bfs_print();
 //    bt.remove(58);
+/*
     for(int i=0;i<count;i++){
         bt.remove(keys[i]);  
     }
     bt.bfs_print();
+    */
     /*
     for(std::vector<keyType>::iterator it=key_list.begin();it!=key_list.end();it++)
     {

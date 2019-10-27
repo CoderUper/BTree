@@ -44,6 +44,7 @@ Node* BTree::search(keyType key)
         */
         if(pos>=0&&v->key[pos]==key) return v;
         hot=v;
+        if(v->is_leaf) return NULL;
         v=v->child[pos+1];
     }
     return NULL;
@@ -56,7 +57,7 @@ bool BTree::insert(keyType key)
     node=hot;
     int pos=node->search(key);
     node->key_insert(pos+1,key);
-    node->child_insert(pos+2,NULL);
+    node->child_insert(pos+1,NULL);
     num++;
     SolveOverflow(node);
     //std::cout<<"insert successful\n";
@@ -68,19 +69,16 @@ bool BTree::remove(keyType key)
     Node* node=search(key);
     if(!node) return false;  //没找到指定元素
     int pos=node->search(key);
-    std::cout<<node->key[pos]<<" "<<key<<std::endl;
-    if(key==170)
-        std::cout<<"here\n";
-    if(node->child[0])   //若ndoe为非叶节点，找到其中序下的直接后继
+    if(!node->is_leaf)   //若ndoe为非叶节点，找到其中序下的直接后继
     {
         Node* p=node->child[pos+1];
-        while(p->child[0]) p=p->child[0];
+        while(!p->is_leaf) p=p->child[0];
         node->key[pos]=p->key[0];
         node=p;
         pos=0;
     }
     node->key_remove(pos);
-    node->child_remove(pos+1);
+    node->child_remove(pos);
     num--;
     SolveUnderflow(node);
     return true;
@@ -95,31 +93,30 @@ void BTree::SolveOverflow(Node* node)
     keyType e=node->key[M];
     //生成新节点，并赋值
     Node* new_node=create_node();
-    for(int i=0;i<M-1;i++)
+    //判断用B+树还是B树分裂法
+    if(node->is_leaf)
     {
-        /*
-        new_node->key_insert(i,node->key_remove(M+1));
-        new_node->child_insert(i,node->child_remove(M+1));
-        std::cout<<"new_node keynum and childnum:"<<new_node->key_num<<new_node->child_num<<std::endl;
-        */
-        new_node->key[i]=node->key[M+i+1];
-        new_node->child[i]=node->child[M+i+1];
-        node->key[M+i+1]=0;
-        node->child[M+i+1]=NULL;
+        for(int i=0;i<M;i++)
+        {
+            new_node->key_insert(i,node->key_remove(M));
+            new_node->child_insert(i,node->child_remove(M));
+        }
+        new_node->child[M]=node->child_remove(M);
+        node->child_insert(M,new_node);
     }
-    /*
-    new_node->child_insert(M-1,node->child_remove(M+1));
-    node->key_remove(M);
-    */
-    node->key[M]=0;
-    new_node->child[M-1]=node->child[2*M];
-    node->child[2*M]=NULL;
-    node->key_num=M;
-    node->child_num=M+1;
-    new_node->key_num=M-1;
-    new_node->child_num=M;
+    else
+    {
+        for(int i=0;i<M-1;i++)
+        {
+            new_node->key_insert(i,node->key_remove(M+1));
+            new_node->child_insert(i,node->child_remove(M+1));
+        }
+        new_node->child[M-1]=node->child_remove(M+1);
+        node->key_remove(M);
+    }
+    new_node->is_leaf=node->is_leaf;
     new_node->parent=node->parent;
-    if(new_node->child[0])
+    if(!new_node->is_leaf)
         for(int i=0;i<new_node->child_num;i++)
             new_node->child[i]->parent=new_node;
     //分裂的点是根节点
@@ -132,18 +129,11 @@ void BTree::SolveOverflow(Node* node)
         new_root->key[0]=e;
         new_root->key_num=1;
         new_root->child_num=2;
+        new_root->is_leaf=false;
         node->parent=new_root;
         new_node->parent=new_root;
         root=new_root;
-        /*
-        std::cout<<"new_root is:"<<new_root<<";\n";
-        for(int i=0;i<new_root->num;i++)
-            std::cout<<new_root->key[i]<<" ";
-        std::cout<<"\n-----------------------\n";
-        for(int i=0;i<=new_root->num;i++)
-            std::cout<<new_root->child[i]<<" ";
-        std::cout<<"---------------\n";
-        */
+
     }
     //分裂点不是根节点
     else
@@ -152,19 +142,7 @@ void BTree::SolveOverflow(Node* node)
         int pos=p->search(e);
         p->key_insert(pos+1,e);
         p->child_insert(pos+2,new_node);
-        //p->child[pos+1]=node;
-        //p->child[pos+2]=new_node;
-        //node->parent=p;
         new_node->parent=p;
-        /*
-        std::cout<<"parent is:"<<p<<";\n";
-        for(int i=0;i<p->num;i++)
-            std::cout<<p->key[i]<<" ";
-        std::cout<<"\n-----------------------\n";
-        for(int i=0;i<=p->num;i++)
-            std::cout<<p->child[i]<<" ";
-        std::cout<<"---------------\n";
-        */
         SolveOverflow(p);
     }
 }
@@ -253,7 +231,7 @@ void BTree::release(Node* root)
     {
         for(int i=0;i<root->child_num;i++)
         {
-            if(root->child[i]!=NULL)
+            if(!root->is_leaf)
             {
                release(root->child[i]);
             }
@@ -267,6 +245,7 @@ void BTree::bfs_print()
 {
     if(!root) return;
     //初始化队列
+    std::cout<<"init\n";
     int flag=0;
     Node* queue[num];
     memset(queue,0,sizeof(queue));
@@ -292,7 +271,7 @@ void BTree::bfs_print()
         std::cout<<"key num in root is"<<p->key_num<<std::endl;
         for(int i=0;i<p->child_num;i++)
         {
-            if(p->child[i]!=NULL)
+            if(!p->is_leaf)
             {
                 queue[rear++]=p->child[i];                   
                 std::cout<<p->child[i]<<" ";
